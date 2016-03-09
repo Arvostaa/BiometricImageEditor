@@ -183,6 +183,19 @@ public class Pane extends JPanel {
 		        }
 		    });
 		 
+		 adjustBrightness.addActionListener(new ActionListener() {
+		        @Override
+		        public void actionPerformed(ActionEvent e) {
+		         
+		        	  JFrame frame = new JFrame ("Adjust brightness");
+			            frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+			            frame.getContentPane().add (new BrightnessAdjustment()); //?
+			            frame.pack();
+			            frame.setVisible (true);
+
+		        }
+		    });
+		 
 		loadFile.addActionListener(new ActionListener() {
 
 			@Override
