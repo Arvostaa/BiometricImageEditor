@@ -11,8 +11,6 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import convertRGB.Stretching;
-
 public class GetHistogram extends JPanel {
 
 	Dimension dimPic;
@@ -21,8 +19,6 @@ public class GetHistogram extends JPanel {
 	int[] samples;
 	int dimension;
 	
-	Stretching stretchHistogram = new Stretching();
-
 	public GetHistogram(Dimension d, String color, File image, int dim) {
 		dimension = dim;
 		try {

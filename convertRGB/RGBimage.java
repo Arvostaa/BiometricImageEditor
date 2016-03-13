@@ -28,7 +28,7 @@ import javax.swing.JPanel;
 public class RGBimage {
 
 	public BufferedImage img;
-	String sname;
+	public String sname;
 	public JLabel imgContainer;
 	public File selectedFile;
 	public String selectedPath;
@@ -92,6 +92,7 @@ public class RGBimage {
 		int result = fc.showOpenDialog(null);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			selectedFile = fc.getSelectedFile();
+			 
 			sname = selectedFile.getAbsolutePath();
 
 			scaleImage(selectedFile);

@@ -28,6 +28,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import Histograms.GenHistogram;
+import Histograms.GenHistogram2;
 
 
 public class Pane extends JPanel {
@@ -157,9 +158,9 @@ public class Pane extends JPanel {
 		        @Override
 		        public void actionPerformed(ActionEvent e) {
 		            JFrame frame = new JFrame ("Histograms");
-		            frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+		            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		            try {
-						frame.getContentPane().add (new GenHistogram(imgMain));
+						frame.getContentPane().add (new GenHistogram2(imgMain));
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

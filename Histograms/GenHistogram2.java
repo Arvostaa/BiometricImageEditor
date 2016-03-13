@@ -22,19 +22,18 @@ import javax.swing.event.ChangeListener;
 import convertRGB.RGBimage;
 import convertRGB.SaveImage;
 
-public class GenHistogram extends JFrame {
+public class GenHistogram2 extends JPanel {
 
-	public GenHistogram(RGBimage image) throws IOException {
-		super("Generating Histogram");
+	public GenHistogram2(RGBimage image) throws IOException {
+		//super("Generating Histogram");
 		JPanel histograms = new JPanel();
 		JPanel buttons = new JPanel();
 		JButton stretchButton = new JButton("stretch");
 		JButton eqButton = new JButton("equalize");
 		
 		buttons.setLayout(new GridLayout(1, 2, 1, 3));
-		
-		
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				
+		//setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setSize(900, 900);
 		setVisible(true);
 
@@ -47,7 +46,7 @@ public class GenHistogram extends JFrame {
 		
 		buttons.add(stretchButton);
 		buttons.add(eqButton);
-		
+		histograms.setLayout(new GridLayout(1, 3, 1, 3));
 		histograms.add(buttons);
 		histograms.add(rHistogram);
 		histograms.add(gHistogram);
@@ -63,18 +62,21 @@ public class GenHistogram extends JFrame {
 		        public void actionPerformed(ActionEvent e) {
 		            JFrame frame = new JFrame ("Stretch");
 		            frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-		            try {
-						frame.getContentPane().add (new StretchHistogram(image));
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+		         
+						try {
+							System.out.println("BEFOREPASS: " + image.selectedPath);
+							frame.getContentPane().add (new StretchHistogram(image) );
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					
 		            frame.pack();
 		            frame.setVisible (true);
 
 		        }
 	    });
-		histograms.setLayout(new GridLayout(1, 3, 1, 3));
+		
 
 
 	}
