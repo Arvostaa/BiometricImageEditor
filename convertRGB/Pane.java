@@ -174,9 +174,8 @@ public class Pane extends JPanel {
 		        @Override
 		        public void actionPerformed(ActionEvent e) {
 		         
-		        	  JFrame frame = new JFrame ("Save image");
-			            frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-			            frame.getContentPane().add (new SaveImage(imgMain)); //?
+		        	  JFrame frame = new JFrame ("Save image");			           
+			            frame.getContentPane().add (new SaveImage(imgMain)); 
 			            frame.pack();
 			            frame.setVisible (true);
 
@@ -187,9 +186,8 @@ public class Pane extends JPanel {
 		        @Override
 		        public void actionPerformed(ActionEvent e) {
 		         
-		        	  JFrame frame = new JFrame ("Adjust brightness");
-			            frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-			            frame.getContentPane().add (new BrightnessAdjustment()); //?
+		        	  JFrame frame = new JFrame ("Adjust brightness");			            
+			            frame.getContentPane().add (new BrightnessAdjustment(imgMain)); 
 			            frame.pack();
 			            frame.setVisible (true);
 

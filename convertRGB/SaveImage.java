@@ -35,7 +35,7 @@ public class SaveImage extends JFrame{
 	
 	saveName.setLayout(new GridLayout(1, 2, 1, 3));
 
-	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	setSize(600, 300);
 	setVisible(true);
 

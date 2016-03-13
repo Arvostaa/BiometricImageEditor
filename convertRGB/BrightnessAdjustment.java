@@ -27,206 +27,194 @@ import javax.swing.border.TitledBorder;
 public class BrightnessAdjustment extends JFrame {
 	DisplayPanel displayPanel;
 
-	  JButton brightenButton, darkenButton, resetButton;
+	JButton brightenButton, darkenButton, resetButton;
 
-	  public BrightnessAdjustment() {
-	    super();
-	    Container container = getContentPane();
+	public BrightnessAdjustment(RGBimage image) {
+		super();
+		Container container = getContentPane();
 
-	    displayPanel = new DisplayPanel();
-	    container.add(displayPanel);
+		displayPanel = new DisplayPanel(image);
+		container.add(displayPanel);
 
-	    JPanel panel = new JPanel();
-	    panel.setLayout(new GridLayout(1, 2));
-	    panel
-	        .setBorder(new TitledBorder(
-	            "Adjust Brightness"));
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(1, 2));
+		panel.setBorder(new TitledBorder("Adjust Brightness"));
 
-	    brightenButton = new JButton("Brightness >>");
-	    brightenButton.addActionListener(new ButtonListener());
-	    darkenButton = new JButton("Darkness >>");
-	    darkenButton.addActionListener(new ButtonListener());
-	    
-	    resetButton = new JButton("Reset");
-	    resetButton.addActionListener(new ButtonListener());
+		brightenButton = new JButton("Brightness >>");
+		brightenButton.addActionListener(new ButtonListener());
+		darkenButton = new JButton("Darkness >>");
+		darkenButton.addActionListener(new ButtonListener());
 
-	    panel.add(brightenButton);
-	    panel.add(darkenButton);
-	    panel.add(resetButton);
+		resetButton = new JButton("Reset");
+		resetButton.addActionListener(new ButtonListener());
 
-	    container.add(BorderLayout.SOUTH, panel);
+		panel.add(brightenButton);
+		panel.add(darkenButton);
+		panel.add(resetButton);
 
-	    addWindowListener(new WindowEventHandler());
-	    setSize(displayPanel.getWidth(), displayPanel.getHeight() + 25);
-	    show();
-	  }
+		container.add(BorderLayout.SOUTH, panel);
 
-	  class WindowEventHandler extends WindowAdapter {
-	    public void windowClosing(WindowEvent e) {
-	      System.exit(0);
-	    }
-	  }
-
-	  class ButtonListener implements ActionListener {
-	    public void actionPerformed(ActionEvent e) {
-	      JButton button = (JButton) e.getSource();
-
-	      if (button.equals(brightenButton)) {
-	        displayPanel.brightenLUT();
-	        displayPanel.applyFilter();
-	        displayPanel.repaint();
-	      } else if (button.equals(darkenButton)) {
-	        displayPanel.darkenLUT();
-	        displayPanel.applyFilter();
-	        displayPanel.repaint();
-	      } else if (button.equals(resetButton)) {
-	        displayPanel.reset();
-	        displayPanel.repaint();
-	      }
-	    }
-	  }
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setSize(displayPanel.getWidth(), displayPanel.getHeight() + 25);
+		show();
 	}
 
-	class DisplayPanel extends JPanel {
-	  Image displayImage;
+	class ButtonListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			JButton button = (JButton) e.getSource();
 
-	  BufferedImage bi;
+			if (button.equals(brightenButton)) {
+				displayPanel.brightenLUT();
+				displayPanel.applyFilter();
+				displayPanel.repaint();
+			} else if (button.equals(darkenButton)) {
+				displayPanel.darkenLUT();
+				displayPanel.applyFilter();
+				displayPanel.repaint();
+			} else if (button.equals(resetButton)) {
+				displayPanel.reset();
+				displayPanel.repaint();
+			}
+		}
+	}
+}
 
-	  Graphics2D big;
+class DisplayPanel extends JPanel {
+	Image displayImage;
 
-	  LookupTable lookupTable;
+	BufferedImage bi;
 
-	  DisplayPanel() {
-	    setBackground(Color.black); // panel background color
-	    loadImage();
-	    setSize(displayImage.getWidth(this), displayImage.getWidth(this)); // panel
-	    createBufferedImage();
-	  }
+	Graphics2D big;
 
-	  public void loadImage() {
-	    displayImage = Toolkit.getDefaultToolkit().getImage(
-	        "aragorn.jpg");
-	    MediaTracker mt = new MediaTracker(this);
-	    mt.addImage(displayImage, 1);
-	    try {
-	      mt.waitForAll();
-	    } catch (Exception e) {
-	      System.out.println("Exception while loading.");
-	    }
+	LookupTable lookupTable;
 
-	    if (displayImage.getWidth(this) == -1) {
-	      System.out.println("No jpg file");
-	      System.exit(0);
-	    }
-	  }
+	DisplayPanel(RGBimage image) {
+		setBackground(Color.black); // panel background color
+		loadImage(image);
+		setSize(displayImage.getWidth(this), displayImage.getWidth(this)); // panel
+		createBufferedImage(image);
+	}
 
-	  public void createBufferedImage() {
-	    bi = new BufferedImage(displayImage.getWidth(this), displayImage
-	        .getHeight(this), BufferedImage.TYPE_INT_ARGB);
+	public void loadImage(RGBimage image) {
+		displayImage = image.img;
+		MediaTracker mt = new MediaTracker(this);
+		mt.addImage(displayImage, 1);
+		try {
+			mt.waitForAll();
+		} catch (Exception e) {
+			System.out.println("Exception while loading.");
+		}
 
-	    big = bi.createGraphics();
-	    big.drawImage(displayImage, 0, 0, this);
-	  }
+		if (displayImage.getWidth(this) == -1) {
+			System.out.println("No jpg file");
+			System.exit(0);
+		}
+	}
 
-	  public void brightenLUT() {
-	    byte brighten[] = new byte[256];
-	    for (int i = 0; i < 256; i++) {/*
-	      short pixelValue = (short) (i + 10);
-	      if (pixelValue > 255)
-	        pixelValue = 255;
-	      else if (pixelValue < 0)
-	        pixelValue = 0;
-	      brighten[i] = pixelValue;*/
-	    	
-	    	 brighten[i] = (byte)(Math.sqrt((float)i/255.0) * 255);	
-	    	 System.out.println(brighten[i]);
-	    	
-	    }
-	   lookupTable = new ByteLookupTable(0, brighten);
+	public void createBufferedImage(RGBimage image) {
+		bi = new BufferedImage(displayImage.getWidth(this), displayImage.getHeight(this), BufferedImage.TYPE_INT_ARGB);
 
-	  }
+		big = bi.createGraphics();
+		big.drawImage(displayImage, 0, 0, this);
+	}
 
-	  public void darkenLUT() {
-	    byte brighten[] = new byte[256];
-	    for (int i = 0; i < 256; i++) {/*
-	      byte pixelValue = (byte) (i - 10);
-	      if (pixelValue > 255)
-	        pixelValue = (byte)255;
-	      else if (pixelValue < 0)
-	        pixelValue = 0;
-	      brighten[i] = pixelValue;*/
-	      
-	      /*
-	     // Darken the image by 10%
-	float scaleFactor = .9f; // out of 100 ... obviously
-	RescaleOp op = new RescaleOp(scaleFactor, 0, null);
-	bufferedImage = op.filter(bufferedImage, null);
+	public void brightenLUT() {
+		short brighten[] = new short[256];
+		for (int i = 0; i < 256; i++) {
+			short pixelValue = (short) (i + 10);
+			if (pixelValue > 255)
+				pixelValue = (short) 255;
+			else if (pixelValue < 0)
+				pixelValue = 0;
+			brighten[i] = pixelValue;
 
-	       */
-		  brighten[i] = (byte)((Math.sqrt((float)i/255.0) * 255));
-	    
-	    //	brighten[i] = (byte)(Math.sqrt((float)i/255.0) *i);	 //DZIA£A tak jakby :<
-	   	// brighten[i] = (byte)(Math.pow((((float)1/i) ),0.5) *225);
-	    	//brighten[i] = (byte)(Math.sqrt((float)i/255.0) );	
-	     // brighten[i] = (byte)(Math.sqrt((float)i/255.0) * 255);	
-	      System.out.println(brighten[i]);
-	    }
-	    lookupTable = new ByteLookupTable(0, brighten);
-	  }
+			// brighten[i] = (byte)(Math.sqrt((float)i/255.0) * 255);
+			System.out.println(brighten[i]);
 
-	  public void contrastIncLUT() {
-	    short brighten[] = new short[256];
-	    for (int i = 0; i < 256; i++) {
-	      short pixelValue = (short) (i * 1.2);
-	      if (pixelValue > 255)
-	        pixelValue = 255;
-	      else if (pixelValue < 0)
-	        pixelValue = 0;
-	      brighten[i] = pixelValue;
-	    }
-	    lookupTable = new ShortLookupTable(0, brighten);
-	  }
+		}
+		lookupTable = new ShortLookupTable(0, brighten);
 
-	  public void contrastDecLUT() {
-	    short brighten[] = new short[256];
-	    for (int i = 0; i < 256; i++) {
-	      short pixelValue = (short) (i / 1.2);
-	      if (pixelValue > 255)
-	        pixelValue = 255;
-	      else if (pixelValue < 0)
-	        pixelValue = 0;
-	      brighten[i] = pixelValue;
-	    }
-	    lookupTable = new ShortLookupTable(0, brighten);
-	  }
+	}
 
-	  public void reverseLUT() {
-	    byte reverse[] = new byte[256];
-	    for (int i = 0; i < 256; i++) {
-	      reverse[i] = (byte) (255 - i);
-	    }
-	    lookupTable = new ByteLookupTable(0, reverse);
-	  }
+	public void darkenLUT() {
+		short brighten[] = new short[256];
+		for (int i = 0; i < 256; i++) {
+			short pixelValue = (short) (i - 10);
+			if (pixelValue > 255)
+				pixelValue = (byte) 255;
+			else if (pixelValue < 0)
+				pixelValue = 0;
+			brighten[i] = pixelValue;
 
-	  public void reset() {
-	    big.setColor(Color.black);
-	    big.clearRect(0, 0, bi.getWidth(this), bi.getHeight(this));
-	    big.drawImage(displayImage, 0, 0, this);
-	  }
+			/*
+			 * // Darken the image by 10% float scaleFactor = .9f; // out of 100
+			 * ... obviously RescaleOp op = new RescaleOp(scaleFactor, 0, null);
+			 * bufferedImage = op.filter(bufferedImage, null);
+			 * 
+			 */
+			// brighten[i] = (byte)((Math.sqrt((float)i/255.0) * 255));
 
-	    public void applyFilter() {
-	    LookupOp lop = new LookupOp(lookupTable, null);
-	    lop.filter(bi, bi);
-	  }
+			// brighten[i] = (byte)(Math.sqrt((float)i/255.0) *i); //DZIA£A tak
+			// jakby :<
 
-	  public void update(Graphics g) {
-	    g.clearRect(0, 0, getWidth(), getHeight());
-	    paintComponent(g);
-	  }
+			System.out.println(brighten[i]);
+		}
+		lookupTable = new ShortLookupTable(0, brighten);
+	}
 
-	  public void paintComponent(Graphics g) {
-	    super.paintComponent(g);
-	    Graphics2D g2D = (Graphics2D) g;
-	    g2D.drawImage(bi, 0, 0, this);
-	  }
+	public void contrastIncLUT() {
+		short brighten[] = new short[256];
+		for (int i = 0; i < 256; i++) {
+			short pixelValue = (short) (i * 1.2);
+			if (pixelValue > 255)
+				pixelValue = 255;
+			else if (pixelValue < 0)
+				pixelValue = 0;
+			brighten[i] = pixelValue;
+		}
+		lookupTable = new ShortLookupTable(0, brighten);
+	}
+
+	public void contrastDecLUT() {
+		short brighten[] = new short[256];
+		for (int i = 0; i < 256; i++) {
+			short pixelValue = (short) (i / 1.2);
+			if (pixelValue > 255)
+				pixelValue = 255;
+			else if (pixelValue < 0)
+				pixelValue = 0;
+			brighten[i] = pixelValue;
+		}
+		lookupTable = new ShortLookupTable(0, brighten);
+	}
+
+	public void reverseLUT() {
+		byte reverse[] = new byte[256];
+		for (int i = 0; i < 256; i++) {
+			reverse[i] = (byte) (255 - i);
+		}
+		lookupTable = new ByteLookupTable(0, reverse);
+	}
+
+	public void reset() {
+		big.setColor(Color.black);
+		big.clearRect(0, 0, bi.getWidth(this), bi.getHeight(this));
+		big.drawImage(displayImage, 0, 0, this);
+	}
+
+	public void applyFilter() {
+		LookupOp lop = new LookupOp(lookupTable, null);
+		lop.filter(bi, bi);
+	}
+
+	public void update(Graphics g) {
+		g.clearRect(0, 0, getWidth(), getHeight());
+		paintComponent(g);
+	}
+
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		Graphics2D g2D = (Graphics2D) g;
+		g2D.drawImage(bi, 0, 0, this);
+	}
 }

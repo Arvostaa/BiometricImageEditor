@@ -138,7 +138,7 @@ public class RGBimage {
 		}
 	}
 
-	public void updateRvalue(int r) { // jako argument podajê wartoœæ R
+	public void updateRvalue(int r) { // jako argument podajÃª wartoÅ“Ã¦ R
 		int w = img.getWidth();
 		int h = img.getHeight();
 		int pixel;
@@ -150,8 +150,8 @@ public class RGBimage {
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				pixel = img.getRGB(j, i);
-				color = new Color(pixel, true); // tworzê kolor pixela
-				g = color.getGreen();// zapamiêtujê g i b - bo tych wartoœci NIE
+				color = new Color(pixel, true); // tworzÃª kolor pixela
+				g = color.getGreen();// zapamiÃªtujÃª g i b - bo tych wartoÅ“ci NIE
 										// ZMIENIAM
 				b = color.getBlue();
 				rgb = ((r & 0x0ff) << 16) | ((g & 0x0ff) << 8) | (b & 0x0ff);

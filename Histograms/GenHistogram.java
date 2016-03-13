@@ -22,7 +22,7 @@ public class GenHistogram extends JFrame {
 		JPanel histograms = new JPanel();
 		histograms.setLayout(new GridLayout(1, 3, 1, 3));
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setSize(900, 900);
 		setVisible(true);
 
