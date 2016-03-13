@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import Histograms.GenHistogram;
+
 import Histograms.GenHistogram2;
 
 

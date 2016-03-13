@@ -15,8 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import Histograms.GenHistogram;
-import Histograms.GetHistogram;
+import Histograms.GenHistogram2;
 
 public class SaveImage extends JFrame{
 	

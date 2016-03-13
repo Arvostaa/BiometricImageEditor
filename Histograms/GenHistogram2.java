@@ -76,6 +76,18 @@ public class GenHistogram2 extends JPanel {
 
 		        }
 	    });
+		eqButton.addActionListener(new ActionListener() {
+			 @Override
+		        public void actionPerformed(ActionEvent e) {
+				 System.out.println("EQUALIZE-CREATE");
+		            JFrame frame = new JFrame ("Equalize");
+		            frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+		            frame.getContentPane().add (new EqualizeHistogram(image));
+		            frame.pack();
+		            frame.setVisible (true);
+
+		        }
+	    });
 		
 
 
