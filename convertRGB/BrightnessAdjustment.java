@@ -97,7 +97,7 @@ class DisplayPanel extends JPanel {
 
 	public void loadImage(RGBimage image) {
 		displayImage = image.img;
-		MediaTracker mt = new MediaTracker(this);
+	/*	MediaTracker mt = new MediaTracker(this);
 		mt.addImage(displayImage, 1);
 		try {
 			mt.waitForAll();
@@ -108,7 +108,7 @@ class DisplayPanel extends JPanel {
 		if (displayImage.getWidth(this) == -1) {
 			System.out.println("No jpg file");
 			System.exit(0);
-		}
+		}*/
 	}
 
 	public void createBufferedImage(RGBimage image) {
@@ -160,40 +160,6 @@ class DisplayPanel extends JPanel {
 			System.out.println(brighten[i]);
 		}
 		lookupTable = new ShortLookupTable(0, brighten);
-	}
-
-	public void contrastIncLUT() {
-		short brighten[] = new short[256];
-		for (int i = 0; i < 256; i++) {
-			short pixelValue = (short) (i * 1.2);
-			if (pixelValue > 255)
-				pixelValue = 255;
-			else if (pixelValue < 0)
-				pixelValue = 0;
-			brighten[i] = pixelValue;
-		}
-		lookupTable = new ShortLookupTable(0, brighten);
-	}
-
-	public void contrastDecLUT() {
-		short brighten[] = new short[256];
-		for (int i = 0; i < 256; i++) {
-			short pixelValue = (short) (i / 1.2);
-			if (pixelValue > 255)
-				pixelValue = 255;
-			else if (pixelValue < 0)
-				pixelValue = 0;
-			brighten[i] = pixelValue;
-		}
-		lookupTable = new ShortLookupTable(0, brighten);
-	}
-
-	public void reverseLUT() {
-		byte reverse[] = new byte[256];
-		for (int i = 0; i < 256; i++) {
-			reverse[i] = (byte) (255 - i);
-		}
-		lookupTable = new ByteLookupTable(0, reverse);
 	}
 
 	public void reset() {

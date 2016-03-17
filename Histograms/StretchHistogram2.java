@@ -6,6 +6,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,34 +20,31 @@ import javax.swing.plaf.synth.SynthSeparatorUI;
 
 import convertRGB.RGBimage;
 
-public class StretchHistogram extends JPanel {
+public class StretchHistogram2 extends JPanel {
 
 	BufferedImage img;
-	BufferedImage imgAfterS;
+//	BufferedImage imgAfterS;
 	JButton button;
 	JPanel slidersPanel;
 	SliderPanel sliderMin;
 	SliderPanel sliderMax;
 	String path;
 
-	
-	public BufferedImage returnImage(){
-		
-		return imgAfterS;
-	}
-	public StretchHistogram(BufferedImage image, String pathimage) throws IOException {
+	public StretchHistogram2() throws IOException {
 
+		
+		
+		/*
 		button = new JButton("Stretch ");
-		path = pathimage;
+		//path = image.sname;
 		System.out.println("sciezka: " + path);
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					System.out.println("Utworzony stretchHistogram");
 					img = ImageIO.read(new File(path));
 					writeColorImageValueToFile(img);
-					
+
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -65,20 +64,24 @@ public class StretchHistogram extends JPanel {
 		slidersPanel.add(sliderMax);
 
 		setLayout(new BorderLayout(4, 4));
-		//add("North", image.imgContainer);
+	//	add("North", image.imgContainer);
 		add("Center", slidersPanel);
 		add("South", button);
-
+*/
 	}
 
-	public void writeColorImageValueToFile(BufferedImage image) {
+	public BufferedImage stretchImage(BufferedImage img) {
+		BufferedImage histogramStr = new BufferedImage(img.getWidth(),img.getHeight(), img.getType());
+	/*	ColorModel cm = img.getColorModel();
+	    boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+	    WritableRaster raster = img.copyData(img.getRaster().createCompatibleWritableRaster());
+	    BufferedImage temp = new BufferedImage(cm, raster, isAlphaPremultiplied, null);*/
 		
-		System.out.println("sTART WRITE IMAGE");
-		int width = image.getWidth();
-		int height = image.getHeight();
+		int width = img.getWidth();
+		int height = img.getHeight();
 
-		int min = sliderMin.value; // stretch min level
-		int max = sliderMax.value; // stretch max level
+		int min = 100; // stretch min level
+		int max = 255; // stretch max level
 
 		System.out.println("HistMinValue: " + min + ", max: " + max);
 		System.out.println("width=" + width + " height=" + height);
@@ -87,26 +90,14 @@ public class StretchHistogram extends JPanel {
 			int[] r = new int[width * height];
 			int[] g = new int[width * height];
 			int[] b = new int[width * height];
-			int[] e = new int[width * height]; // ?
-			int[] data = new int[width * height]; // ?
-			image.getRGB(0, 0, width, height, data, 0, width);
-
-			int[] hist_refore_r = new int[256];
-			int[] hist_refore_g = new int[256];
-			int[] hist_refore_b = new int[256];
-
-			int[] hist_after_r = new int[256];
-			int[] hist_after_g = new int[256];
-			int[] hist_after_b = new int[256];
+			int[] e = new int[width * height];
+			int[] data = new int[width * height];
+			img.getRGB(0, 0, width, height, data, 0, width);
 
 			for (int i = 0; i < (height * width); i++) {
 				r[i] = (int) ((data[i] >> 16) & 0xff);
 				g[i] = (int) ((data[i] >> 8) & 0xff);
 				b[i] = (int) (data[i] & 0xff);
-
-				hist_refore_r[r[i]]++;
-				hist_refore_g[g[i]]++;
-				hist_refore_b[b[i]]++;
 
 				// System.out.println(r[i]+" "+g[i]+" "+b[i]);
 
@@ -129,51 +120,20 @@ public class StretchHistogram extends JPanel {
 				if (b[i] < 0)
 					b[i] = 0;
 
-				// System.out.println(r[i]+" "+g[i]+" "+b[i]);
-
-				hist_after_r[r[i]]++;
-				hist_after_g[g[i]]++;
-				hist_after_b[b[i]]++;
-
 				// convert it back
 				e[i] = (r[i] << 16) | (g[i] << 8) | b[i];
+				System.out.println("siemae" + e[i]);
 
 			}
 			// convert e back to say jpg
-			image.setRGB(0, 0, width, height, e, 0, width);
-			ImageIO.write(image, "jpeg" /* "png" "jpeg" ... format desired */, new File("superduperyoooo666.jpg") /* target */);
-			
-			imgAfterS = image;
-
-			printhistogram(hist_refore_r, "hist_before_r.txt"); // before
-																// stretchig ie
-																// original
-			printhistogram(hist_refore_g, "hist_before_g.txt");
-			printhistogram(hist_refore_b, "hist_before_b.txt");
-			printhistogram(hist_after_r, "hist_after_r.txt"); // after
-																// stretching ie
-																// modified ones
-			printhistogram(hist_after_g, "hist_after_g.txt");
-			printhistogram(hist_after_b, "hist_after_b.txt");
+			histogramStr.setRGB(0, 0, width, height, e, 0, width);
+			ImageIO.write(histogramStr, "jpeg" /* "png" "jpeg" ... format desired */, new File("ELOSIEMA3.jpg") /* target */);
 
 		} catch (Exception e) {
 			System.err.println("Error: " + e);
 			Thread.dumpStack();
 
 		}
-	}
-
-	public void printhistogram(int[] hist, String file) {
-		try {
-			FileWriter op = new FileWriter("" + file);
-
-			for (int i = 0; i < hist.length; ++i) {
-				op.write("[" + i + "]=" + hist[i] + "\n");
-			}
-			op.close();
-		} catch (Exception e) {
-			System.err.println("Error2: " + e);
-			Thread.dumpStack();
-		}
+		return histogramStr;
 	}
 }

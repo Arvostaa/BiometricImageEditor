@@ -13,26 +13,26 @@ import javax.swing.JPanel;
 
 public class GetHistogram extends JPanel {
 
-	Dimension dimPic;
-	BufferedImage picture;
+	//Dimension dimPic;
+	//BufferedImage picture;
 	String option;
 	int[] samples;
 	int dimension;
 	
-	public GetHistogram(Dimension d, String color, File image, int dim) {
+	public GetHistogram(String color, BufferedImage picture, int dim) {
 		dimension = dim;
-		try {
+		//try {
 			// to dimension the picture
-			dimPic = d;
+	//		dimPic = d;
 			option = color;
-			picture = ImageIO.read(image);
-		} catch (IOException ex) {
-			Logger.getLogger(GetHistogram.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		getHistogram();
+		//	picture = ImageIO.read(image);
+		//} catch (IOException ex) {
+	//		Logger.getLogger(GetHistogram.class.getName()).log(Level.SEVERE, null, ex);
+	//	}
+		getHistogram(picture);
 	}
 
-	public void getHistogram() {
+	public void getHistogram(BufferedImage picture) {
 		samples = new int[256];
 		int maxNumSamples = 0;
 
@@ -105,7 +105,7 @@ public class GetHistogram extends JPanel {
 
 		for (int i = 0; i < 255; i++) {
 			// g.drawLine(i, 0, i, samples[i]);
-			g.drawLine(i, dimension + 2, i, dimension + 2 - samples[i]);
+			g.drawLine(i, 2*dimension + 2, i, 2*dimension + 2 - samples[i]);
 
 		}
 	}

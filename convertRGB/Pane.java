@@ -1,3 +1,4 @@
+
 package convertRGB;
 
 import java.awt.Color;
@@ -29,6 +30,7 @@ import javax.swing.border.EmptyBorder;
 
 
 import Histograms.GenHistogram2;
+import Histograms.HistogramOperations;
 
 
 public class Pane extends JPanel {
@@ -159,8 +161,12 @@ public class Pane extends JPanel {
 		        public void actionPerformed(ActionEvent e) {
 		            JFrame frame = new JFrame ("Histograms");
 		            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		         
 		            try {
 						frame.getContentPane().add (new GenHistogram2(imgMain));
+						frame.setSize(900, 600);
+						frame.setSize(frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
+						frame.pack();
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -175,7 +181,8 @@ public class Pane extends JPanel {
 		        @Override
 		        public void actionPerformed(ActionEvent e) {
 		         
-		        	  JFrame frame = new JFrame ("Save image");			           
+		        	  JFrame frame = new JFrame ("Save image");		
+		        	  frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			            frame.getContentPane().add (new SaveImage(imgMain)); 
 			            frame.pack();
 			            frame.setVisible (true);
@@ -187,8 +194,14 @@ public class Pane extends JPanel {
 		        @Override
 		        public void actionPerformed(ActionEvent e) {
 		         
-		        	  JFrame frame = new JFrame ("Adjust brightness");			            
-			            frame.getContentPane().add (new BrightnessAdjustment(imgMain)); 
+		        	  JFrame frame = new JFrame ("Adjust brightness");	
+		        	  frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			            try {
+							frame.getContentPane().add (new HistogramOperations(imgMain));
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} 
 			            frame.pack();
 			            frame.setVisible (true);
 
@@ -200,13 +213,7 @@ public class Pane extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					/*
-					 * imgMain.imgContainer.setBounds(600, 1000, 800, 600);
-					 * imgR.imgContainer.setBounds(0, 0, 800, 600);
-					 * imgG.imgContainer.setBounds(800, 0, 800, 600);
-					 * imgB.imgContainer.setBounds(1600, 0, 800, 600);
-					 */
-
+					
 					imgMain.setNewMainImage();
 					imgR.copyCreatedNewMainImage(imgMain.selectedFile);
 					imgG.copyCreatedNewMainImage(imgMain.selectedFile);
