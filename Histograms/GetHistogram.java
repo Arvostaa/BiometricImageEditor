@@ -13,22 +13,15 @@ import javax.swing.JPanel;
 
 public class GetHistogram extends JPanel {
 
-	//Dimension dimPic;
-	//BufferedImage picture;
+	// Dimension dimPic;
+	// BufferedImage picture;
 	String option;
 	int[] samples;
 	int dimension;
-	
+
 	public GetHistogram(String color, BufferedImage picture, int dim) {
 		dimension = dim;
-		//try {
-			// to dimension the picture
-	//		dimPic = d;
-			option = color;
-		//	picture = ImageIO.read(image);
-		//} catch (IOException ex) {
-	//		Logger.getLogger(GetHistogram.class.getName()).log(Level.SEVERE, null, ex);
-	//	}
+		option = color;
 		getHistogram(picture);
 	}
 
@@ -74,14 +67,13 @@ public class GetHistogram extends JPanel {
 					samples[igreen]++;
 					samples[ired]++;
 
-					averageRGBvalue = (ired +igreen + iblue)/3;
-					System.out.println(averageRGBvalue + "eloaverageeee");
-					//System.out.println(samples[averageRGBvalue] + "samples[a]eeee");
+					averageRGBvalue = (ired + igreen + iblue) / 3;
+								
 					if (samples[averageRGBvalue] > maxNumSamples) {
 						maxNumSamples = samples[averageRGBvalue];
-						
+
 					}
-					
+
 				}
 			} // h
 		} // w
@@ -93,6 +85,8 @@ public class GetHistogram extends JPanel {
 	}// getH
 
 	public void paintComponent(Graphics g) {
+
+		// repaint();
 		if (option.equals("red")) {
 			g.setColor(Color.RED);
 		} else if (option.equals("green")) {
@@ -105,8 +99,20 @@ public class GetHistogram extends JPanel {
 
 		for (int i = 0; i < 255; i++) {
 			// g.drawLine(i, 0, i, samples[i]);
-			g.drawLine(i, 2*dimension + 2, i, 2*dimension + 2 - samples[i]);
+			g.drawLine(i, 2 * dimension + 2, i, 2 * dimension + 2 - samples[i]); //REMOVE *2 FOR STRETCHING
 
 		}
 	}
+
+	public void updateHistogram(int[] newSamples, String color) {
+		System.out.println("UPDATE HIST " + color);
+		samples = newSamples;
+		option = color;
+	}
+
+	public void drawNewHistogram(Graphics g, String color) {
+		System.out.println("RYSOWANY NOWY " + color);
+		paintComponent(g);
+	}
+
 }

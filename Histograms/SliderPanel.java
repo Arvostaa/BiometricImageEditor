@@ -19,9 +19,7 @@ public class SliderPanel extends JPanel {
 			JSlider slider = (JSlider) ce.getSource();
 			if (!slider.getValueIsAdjusting()){
 				System.out.println(slider.getValue());
-			value = slider.getValue();
-			
-			
+			value = slider.getValue();			
 			}
 		}
 	};
@@ -45,8 +43,4 @@ public class SliderPanel extends JPanel {
 		setVisible(true);
 
 	}
-	/*
-	 * public static void main(String... args) { SwingUtilities.invokeLater(new
-	 * Runnable() { public void run() { new SliderChangeEffect(); } }); }
-	 */
 }

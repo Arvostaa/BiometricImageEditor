@@ -27,6 +27,10 @@ public class StretchHistogram extends JPanel {
 	SliderPanel sliderMin;
 	SliderPanel sliderMax;
 	String path;
+	
+	int[] rValue;
+	int[] gValue;
+	int[] bValue;
 
 	
 	public BufferedImage returnImage(){
@@ -155,6 +159,10 @@ public class StretchHistogram extends JPanel {
 																// modified ones
 			printhistogram(hist_after_g, "hist_after_g.txt");
 			printhistogram(hist_after_b, "hist_after_b.txt");
+			
+			rValue = hist_after_r;
+			gValue = hist_after_g;
+			bValue = hist_after_b;
 
 		} catch (Exception e) {
 			System.err.println("Error: " + e);

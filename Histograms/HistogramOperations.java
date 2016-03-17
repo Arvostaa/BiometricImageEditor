@@ -28,53 +28,46 @@ import javax.swing.border.TitledBorder;
 import convertRGB.RGBimage;
 
 public class HistogramOperations extends JFrame {
-	DisplayPanel displayPanel;
+	DisplayPanel displayPanel; // image panel
 	GetHistogram rHistogram, gHistogram, bHistogram, rgbHistogram;
-	HistogramLUT histogramLut;
 
 	JButton brightenButton, darkenButton, resetButton, equalizeButton, stretchButton;
-	
-	StretchHistogram stretch;
 
+	StretchHistogram stretch;
 	EqualizeHistogram equalize;
-	//StretchHistogram2 stretch;
 
 	public HistogramOperations(RGBimage image) throws IOException {
 		super();
 		Container container = getContentPane();
 		equalize = new EqualizeHistogram();
-		//stretch = new StretchHistogram2();
 
 		displayPanel = new DisplayPanel(image);
-
 		JPanel buttons = new JPanel();
 
 		buttons.setLayout(new GridLayout(1, 5));
-		buttons.setBorder(new TitledBorder("Adjust Brightness"));
+		buttons.setBorder(new TitledBorder("Improve image quality"));
 
 		brightenButton = new JButton("Brightness >>");
 		brightenButton.addActionListener(new ButtonListener());
-		darkenButton = new JButton("Darkness >>");
+		darkenButton = new JButton("<< Darkness");
 		darkenButton.addActionListener(new ButtonListener());
-		buttons.setBorder(new TitledBorder("Equalize image"));
+
 		equalizeButton = new JButton("Equalization");
 		equalizeButton.addActionListener(new ButtonListener());
 
 		resetButton = new JButton("Reset");
 		resetButton.addActionListener(new ButtonListener());
 
-		stretchButton = new JButton("Stretch");
+		stretchButton = new JButton("Stretching");
 		stretchButton.addActionListener(new ButtonListener());
 
-		buttons.add(brightenButton);
 		buttons.add(darkenButton);
-
+		buttons.add(brightenButton);
 		buttons.add(equalizeButton);
-		// brightnessButtons.setBorder(new TitledBorder("Reset operations"));
-		buttons.add(resetButton);
 		buttons.add(stretchButton);
+		buttons.add(resetButton);
 
-		// *GENERATE HISTOGRAMS*//
+		// *GENERATE HISTOGRAMS* //
 
 		JPanel histograms = new JPanel();
 		histograms.setLayout(new GridLayout(1, 4));
@@ -92,24 +85,22 @@ public class HistogramOperations extends JFrame {
 		container.add(displayPanel);
 		container.add("Center", histograms);
 		container.add("South", buttons);
-		
-		 JFrame frame = new JFrame ("Stretch");
-         frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-      
-				try {
-					frame.getContentPane().add (stretch = new StretchHistogram(displayPanel.bi, displayPanel.path) );
-				}catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			
-         frame.pack();
-         frame.setVisible (true);
-		
-		
-		
-		// container.add(BorderLayout.NORTH,displayPanel);
-		// container.add(BorderLayout.SOUTH, buttons);
+
+		// * GENERATE STRETCH PANEL *//
+		JFrame frame = new JFrame("Stretch");
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+		try {
+			frame.getContentPane().add(stretch = new StretchHistogram(displayPanel.bi, displayPanel.path));
+		} catch (IOException e1) {
+
+			e1.printStackTrace();
+		}
+
+		frame.pack();
+		frame.setVisible(true);
+
+		///////////////////////////////////////////
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setSize(displayPanel.getWidth(), displayPanel.getHeight() + 600);
@@ -120,27 +111,40 @@ public class HistogramOperations extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			JButton button = (JButton) e.getSource();
 
-			if (button.equals(brightenButton)) {
+			if (button.equals(brightenButton)) { //ADD HISTOGRAM GENERATING
 				displayPanel.brightenLUT();
 				displayPanel.applyFilter();
 				displayPanel.repaint();
-			} else if (button.equals(darkenButton)) {
+				repaint();
+
+			} else if (button.equals(darkenButton)) { //ADD HISTOGRAM GENERATING
 				displayPanel.darkenLUT();
 				displayPanel.applyFilter();
 				displayPanel.repaint();
 			} else if (button.equals(equalizeButton)) {
-				// mainImage = ImageIO.read(new File(path));
+
 				displayPanel.bi = equalize.histogramEqualization(displayPanel.bi);
-				// writeImage("equalizedImage");
 				displayPanel.repaint();
-				
-				/*
-				 * displayPanel.darkenLUT(); displayPanel.applyFilter();
-				 * displayPanel.repaint();
-				 */
+				System.out.println("equalizeButton");
+				rHistogram.updateHistogram(equalize.rgbValues.get(0), "red");
+				gHistogram.updateHistogram(equalize.rgbValues.get(1), "green");
+				bHistogram.updateHistogram(equalize.rgbValues.get(2), "blue");
+
+				rHistogram.drawNewHistogram(rHistogram.getGraphics(), "red");
+				gHistogram.drawNewHistogram(gHistogram.getGraphics(), "green");
+				bHistogram.drawNewHistogram(bHistogram.getGraphics(), "blue");
+
 			} else if (button.equals(stretchButton)) {
-				displayPanel.scaleBufferedImage(stretch.returnImage()); 
+				displayPanel.scaleBufferedImage(stretch.returnImage());
 				displayPanel.repaint();
+
+				rHistogram.updateHistogram(stretch.rValue, "red");
+				gHistogram.updateHistogram(stretch.gValue, "green");
+				bHistogram.updateHistogram(stretch.bValue, "blue");
+
+				rHistogram.drawNewHistogram(rHistogram.getGraphics(), "red");
+				gHistogram.drawNewHistogram(gHistogram.getGraphics(), "green");
+				bHistogram.drawNewHistogram(bHistogram.getGraphics(), "blue");
 			}
 
 			else if (button.equals(resetButton)) {
@@ -162,8 +166,7 @@ class DisplayPanel extends JPanel {
 	LookupTable lookupTable;
 
 	DisplayPanel(RGBimage image) {
-		// setBackground(Color.black); // panel background color
-		
+
 		path = image.sname;
 		loadImage(image);
 		createBufferedImage(image);
@@ -195,22 +198,20 @@ class DisplayPanel extends JPanel {
 		big = bi.createGraphics();
 		big.drawImage(displayImage, 0, 0, this);
 	}
+
 	public void scaleBufferedImage(BufferedImage image) {
-		
-		//BufferedImage before = getBufferedImage(encoded);
+
 		int w = image.getWidth();
 		int h = image.getHeight();
 		BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		AffineTransform at = new AffineTransform();
 		at.scale(0.75, 0.75);
-		AffineTransformOp scaleOp = 
-		   new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		after = scaleOp.filter(image, after);
-		
+
 		big = bi.createGraphics();
 		big.drawImage(after, 0, 0, this);
-		
-		
+
 	}
 
 	public void brightenLUT() {
@@ -246,10 +247,6 @@ class DisplayPanel extends JPanel {
 			 * 
 			 */
 			// brighten[i] = (byte)((Math.sqrt((float)i/255.0) * 255));
-
-			// brighten[i] = (byte)(Math.sqrt((float)i/255.0) *i); //DZIA£A tak
-			// jakby :<
-
 			System.out.println(brighten[i]);
 		}
 		lookupTable = new ShortLookupTable(0, brighten);
@@ -258,11 +255,7 @@ class DisplayPanel extends JPanel {
 	public void reset() {
 
 		bi = new BufferedImage(displayImage.getWidth(this), displayImage.getHeight(this), BufferedImage.TYPE_INT_ARGB);
-
 		big = bi.createGraphics();
-		// big.drawImage(displayImage, 0, 0, this);
-
-		// big.setColor(Color.black);
 		big.clearRect(0, 0, bi.getWidth(this), bi.getHeight(this));
 		big.drawImage(startImage, 0, 0, this);
 	}

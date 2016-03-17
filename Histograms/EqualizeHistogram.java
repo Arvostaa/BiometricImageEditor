@@ -20,6 +20,8 @@ public class EqualizeHistogram extends JPanel {
 	private static BufferedImage mainImage, equalizedImage;
 	private static JButton button;
 	private static String path;
+	
+	public static ArrayList<int[]> rgbValues;
 
 	/*
 	 * public static void main(String[] args) throws IOException {
@@ -76,6 +78,7 @@ public class EqualizeHistogram extends JPanel {
 
 		// Get the Lookup table for histogram equalization
 		ArrayList<int[]> histLUT = histogramEqualizationLUT(original);
+		rgbValues = histLUT;
 
 		BufferedImage histogramEQ = new BufferedImage(original.getWidth(), original.getHeight(), original.getType());
 
