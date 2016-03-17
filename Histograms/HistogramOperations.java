@@ -129,31 +129,61 @@ public class HistogramOperations extends JFrame {
 				rHistogram.updateHistogram(equalize.rgbValues.get(0), "red");
 				gHistogram.updateHistogram(equalize.rgbValues.get(1), "green");
 				bHistogram.updateHistogram(equalize.rgbValues.get(2), "blue");
+				rgbHistogram.updateHistogram(equalize.rgbValues.get(3), "all");
 
 				rHistogram.drawNewHistogram(rHistogram.getGraphics(), "red");
 				gHistogram.drawNewHistogram(gHistogram.getGraphics(), "green");
 				bHistogram.drawNewHistogram(bHistogram.getGraphics(), "blue");
+				rgbHistogram.drawNewHistogram(rgbHistogram.getGraphics(), "all");
 
 			} else if (button.equals(stretchButton)) {
 				displayPanel.scaleBufferedImage(stretch.returnImage());
 				displayPanel.repaint();
 
+				rHistogram.stretched = true;
+				gHistogram.stretched = true;
+				bHistogram.stretched = true;
+				rgbHistogram.stretched = true;
+				
 				rHistogram.updateHistogram(stretch.rValue, "red");
 				gHistogram.updateHistogram(stretch.gValue, "green");
 				bHistogram.updateHistogram(stretch.bValue, "blue");
+				rgbHistogram.updateHistogram(stretch.rgbValue, "all");
+				
 
 				rHistogram.drawNewHistogram(rHistogram.getGraphics(), "red");
 				gHistogram.drawNewHistogram(gHistogram.getGraphics(), "green");
 				bHistogram.drawNewHistogram(bHistogram.getGraphics(), "blue");
+				rgbHistogram.drawNewHistogram(rgbHistogram.getGraphics(), "all");
 			}
 
 			else if (button.equals(resetButton)) {
+				
+
 				displayPanel.reset();
 				displayPanel.repaint();
+				
+				rHistogram.getHistogram(displayPanel.bi);
+				gHistogram.getHistogram(displayPanel.bi);
+				bHistogram.getHistogram(displayPanel.bi);
+				rgbHistogram.getHistogram(displayPanel.bi);
+				
+
+				rHistogram.drawNewHistogram(rHistogram.getGraphics(), "red");
+				gHistogram.drawNewHistogram(gHistogram.getGraphics(), "green");
+				bHistogram.drawNewHistogram(bHistogram.getGraphics(), "blue");
+				rgbHistogram.drawNewHistogram(rgbHistogram.getGraphics(), "all");
+				
+				displayPanel.repaint();
+				
 			}
 		}
 	}
 }
+
+
+
+
 
 class DisplayPanel extends JPanel {
 	Image displayImage, startImage;
@@ -171,6 +201,55 @@ class DisplayPanel extends JPanel {
 		loadImage(image);
 		createBufferedImage(image);
 		setSize(bi.getWidth(), bi.getWidth()); // panel
+		
+		
+	}
+	public void getRGBfromLUT(){ //set new r g b values from br/dar image to genHistogram object
+		
+		int height = bi.getHeight();
+		int width = bi.getWidth();		
+		
+		int[] e = new int[width * height]; // ?
+		int[] data = new int[width * height]; // ?
+		bi.getRGB(0, 0, width, height, data, 0, width);
+
+		
+		int[] r = new int[width * height];
+		int[] g = new int[width * height];
+		int[] b = new int[width * height];
+		int[] rgbAverage = new int[width * height];
+	
+		for (int i = 0; i < (height * width); i++) {
+			r[i] = (int) ((data[i] >> 16) & 0xff);
+			g[i] = (int) ((data[i] >> 8) & 0xff);
+			b[i] = (int) (data[i] & 0xff);
+			rgbAverage[i] = (r[i] + g[i] + b[i]) / 3;
+			
+			if (r[i] > 255)
+				r[i] = 255;
+			if (g[i] > 255)
+				g[i] = 255;
+			if (b[i] > 255)
+				b[i] = 255;
+			
+			if (rgbAverage[i] > 255)
+				rgbAverage[i] = 255;
+
+			if (r[i] < 0)
+				r[i] = 0;
+			if (g[i] < 0)
+				g[i] = 0;
+			if (b[i] < 0)
+				b[i] = 0;
+			
+			if (rgbAverage[i] < 0)
+				rgbAverage[i] = 0;
+			
+			
+			
+		}
+		
+		
 	}
 
 	public void loadImage(RGBimage image) {

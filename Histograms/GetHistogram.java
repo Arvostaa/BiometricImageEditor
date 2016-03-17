@@ -18,6 +18,7 @@ public class GetHistogram extends JPanel {
 	String option;
 	int[] samples;
 	int dimension;
+	Boolean stretched;
 
 	public GetHistogram(String color, BufferedImage picture, int dim) {
 		dimension = dim;
@@ -27,6 +28,7 @@ public class GetHistogram extends JPanel {
 
 	public void getHistogram(BufferedImage picture) {
 		samples = new int[256];
+		stretched = false;
 		int maxNumSamples = 0;
 
 		int allSamples = 0;
@@ -68,7 +70,7 @@ public class GetHistogram extends JPanel {
 					samples[ired]++;
 
 					averageRGBvalue = (ired + igreen + iblue) / 3;
-								
+
 					if (samples[averageRGBvalue] > maxNumSamples) {
 						maxNumSamples = samples[averageRGBvalue];
 
@@ -96,12 +98,31 @@ public class GetHistogram extends JPanel {
 		} else if (option.equals("all")) {
 			g.setColor(Color.BLACK);
 		}
+		if (stretched == false) {
+			
+			
+			System.out.println("NOT STRETCHED");
+			
+			for (int i = 0; i < 255; i++) {
+				// g.drawLine(i, 0, i, samples[i]);
+				g.drawLine(i, 2 * dimension + 2, i, 2 * dimension + 2 - samples[i]); // REMOVE
+																						// *2
+																						// FOR
+																						// STRETCHING
+			}
+		} else {
 
-		for (int i = 0; i < 255; i++) {
-			// g.drawLine(i, 0, i, samples[i]);
-			g.drawLine(i, 2 * dimension + 2, i, 2 * dimension + 2 - samples[i]); //REMOVE *2 FOR STRETCHING
-
+			System.out.println("STRETCHED");
+			for (int i = 0; i < 255; i++) {
+				// g.drawLine(i, 0, i, samples[i]);
+				g.drawLine(i, dimension + 2, i, dimension + 2 - samples[i]); // REMOVE
+																				// *2
+																				// FOR
+																				// STRETCHING
+			}
+			stretched = false;
 		}
+
 	}
 
 	public void updateHistogram(int[] newSamples, String color) {
