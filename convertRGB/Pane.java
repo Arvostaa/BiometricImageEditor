@@ -29,7 +29,6 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 
-import Histograms.GenHistogram2;
 import Histograms.HistogramOperations;
 
 
@@ -44,8 +43,8 @@ public class Pane extends JPanel {
 	private RGBvaluesPane newRGBPane;
 
 	private JButton loadFile = new JButton("Load image");
-	private JButton generateHistogram = new JButton("Histograms");
-	private JButton adjustBrightness = new JButton("Brightness");
+	//private JButton colorLevels = new JButton("Color levels");
+	private JButton colorLevels = new JButton("Color levels");
 	private JButton exportImages = new JButton("Export imgs");
 
 	private int tempRed;
@@ -126,17 +125,10 @@ public class Pane extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 1;
 		gbc.gridy = 4;
-		add(generateHistogram, gbc);
-
-		gbc.weightx = 1.0;
-
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 2;
-		gbc.gridy = 4;
-		add(adjustBrightness, gbc);
+		add(colorLevels, gbc);
 		
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 3;
+		gbc.gridx = 2;
 		gbc.gridy = 4;
 		add(exportImages, gbc);
 
@@ -156,27 +148,6 @@ public class Pane extends JPanel {
 		imgB.imgContainer.setPreferredSize(new Dimension(300, 200));
 		imgB.imgContainer.setMaximumSize(new Dimension(300, 200));
 		
-		 generateHistogram.addActionListener(new ActionListener() {
-		        @Override
-		        public void actionPerformed(ActionEvent e) {
-		            JFrame frame = new JFrame ("Histograms");
-		            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		         
-		            try {
-						frame.getContentPane().add (new GenHistogram2(imgMain));
-						frame.setSize(900, 600);
-						frame.setSize(frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
-						frame.pack();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-		            frame.pack();
-		            frame.setVisible (true);
-
-		        }
-		    });
-
 		 exportImages.addActionListener(new ActionListener() {
 		        @Override
 		        public void actionPerformed(ActionEvent e) {
@@ -184,17 +155,18 @@ public class Pane extends JPanel {
 		        	  JFrame frame = new JFrame ("Save image");		
 		        	  frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			            frame.getContentPane().add (new SaveImage(imgMain)); 
+			           
 			            frame.pack();
 			            frame.setVisible (true);
 
 		        }
 		    });
 		 
-		 adjustBrightness.addActionListener(new ActionListener() {
+		 colorLevels.addActionListener(new ActionListener() {
 		        @Override
 		        public void actionPerformed(ActionEvent e) {
 		         
-		        	  JFrame frame = new JFrame ("Adjust brightness");	
+		        	  JFrame frame = new JFrame ("Color levels");	
 		        	  frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			            try {
 							frame.getContentPane().add (new HistogramOperations(imgMain));
@@ -202,6 +174,7 @@ public class Pane extends JPanel {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						} 
+			           // frame.setSize(900, 600);
 			            frame.pack();
 			            frame.setVisible (true);
 

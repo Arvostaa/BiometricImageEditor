@@ -94,8 +94,11 @@ public class RGBimage {
 			selectedFile = fc.getSelectedFile();
 			 
 			sname = selectedFile.getAbsolutePath();
-
-			scaleImage(selectedFile);
+			img = ImageIO.read(selectedFile);
+		//	scaleImage(selectedFile);
+			
+			
+			//SCALE IMAGE //
 
 			imgContainer.setIcon(new ImageIcon(img));
 			imgContainer.setHorizontalAlignment(JLabel.LEFT);
@@ -108,7 +111,9 @@ public class RGBimage {
 
 		img = ImageIO.read(file);
 		sname = file.getAbsolutePath();
-		selectedFile = file;
+		selectedFile = file; 
+		
+		//scale image //
 
 		imgContainer.setIcon(new ImageIcon(img));
 		imgContainer.setHorizontalAlignment(JLabel.LEFT);

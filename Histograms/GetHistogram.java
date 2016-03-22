@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 public class GetHistogram extends JPanel {
@@ -22,6 +23,9 @@ public class GetHistogram extends JPanel {
 
 	public GetHistogram(String color, BufferedImage picture, int dim) {
 		dimension = dim;
+		
+		//setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
 		option = color;
 		getHistogram(picture);
 	}
@@ -105,7 +109,7 @@ public class GetHistogram extends JPanel {
 			
 			for (int i = 0; i < 255; i++) {
 				// g.drawLine(i, 0, i, samples[i]);
-				g.drawLine(i, 2 * dimension + 2, i, 2 * dimension + 2 - samples[i]); // REMOVE
+				g.drawLine(i, 2 * dimension - 100, i, 2 * dimension - 100 - samples[i]); // REMOVE
 																						// *2
 																						// FOR
 																						// STRETCHING
@@ -115,13 +119,14 @@ public class GetHistogram extends JPanel {
 			System.out.println("STRETCHED");
 			for (int i = 0; i < 255; i++) {
 				// g.drawLine(i, 0, i, samples[i]);
-				g.drawLine(i, dimension + 2, i, dimension + 2 - samples[i]); // REMOVE
+				g.drawLine(i, dimension - 100, i, dimension - 100 - samples[i]); // REMOVE
 																				// *2
 																				// FOR
 																				// STRETCHING
 			}
 			stretched = false;
 		}
+		
 
 	}
 
