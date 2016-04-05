@@ -10,9 +10,13 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -85,9 +89,39 @@ public class RGBimage {
 		}
 
 	}
+	public static BufferedImage deepCopy(BufferedImage bi) {
+	    ColorModel cm = bi.getColorModel();
+	    boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+	    WritableRaster raster = bi.copyData(bi.getRaster().createCompatibleWritableRaster());
+	    return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+	}
+	public void affineScaleImage(){
+		
+		BufferedImage before = deepCopy(img);
+		d = imgContainer.getPreferredSize();
+		double scale = d.getHeight()/(double)img.getHeight();
+			int w = img.getWidth();
+			int h = img.getHeight();
+			BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+			AffineTransform at = new AffineTransform();
+			at.scale(scale, scale);
+			AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+			img = scaleOp.filter(before, after);
+			
+			//img = after;
+
+			//big = bi.createGraphics();
+			//big.drawImage(after, 0, 0, this);
+
+	}
+	
+	
 
 	public void setNewMainImage() throws IOException {
 
+		d = imgContainer.getPreferredSize();
+		System.out.println("dddddd: " + d.width + d.height);
+		
 		JFileChooser fc = new JFileChooser();
 		int result = fc.showOpenDialog(null);
 		if (result == JFileChooser.APPROVE_OPTION) {
@@ -95,12 +129,16 @@ public class RGBimage {
 			 
 			sname = selectedFile.getAbsolutePath();
 			img = ImageIO.read(selectedFile);
-		//	scaleImage(selectedFile);
+		//BufferedImage scaledImG = affineScaleImage(img);
+		//img = scaledImG;
+		affineScaleImage();
 			
-			
+			System.out.println("IMMMGGG" + img.getWidth() + " " +img.getHeight());
+			System.out.println("wynik" + d.getWidth()*(d.getHeight()/(double)img.getHeight()));
 			//SCALE IMAGE //
-
-			imgContainer.setIcon(new ImageIcon(img));
+			
+		//	imgContainer.setIcon(new ImageIcon(img.getScaledInstance((int)(d.getWidth()*(d.getHeight()/(double)img.getHeight())), d.height, Image.SCALE_SMOOTH)));
+		imgContainer.setIcon(new ImageIcon(img));
 			imgContainer.setHorizontalAlignment(JLabel.LEFT);
 			imgContainer.setVerticalAlignment(JLabel.NORTH);
 
@@ -112,6 +150,8 @@ public class RGBimage {
 		img = ImageIO.read(file);
 		sname = file.getAbsolutePath();
 		selectedFile = file; 
+		
+		affineScaleImage();
 		
 		//scale image //
 

@@ -3,8 +3,11 @@ package convertRGB;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.LayoutManager;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -20,32 +23,35 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-
-import Histograms.HistogramOperations;
-
+import Histograms.Histograms;
+import Histograms.LUTimage;
+import Histograms.StretchHistogram;
+import binarization.NiblackFrame;
+import binarization.ThresholdFrame;
 
 public class Pane extends JPanel {
 
-	private RGBimage imgR;
-	private RGBimage imgG;
-	private RGBimage imgB;
-	private RGBimage imgMain;
+	public JMenuBar menu;
 
 	private RGBvaluesPane currentRGBPane;
 	private RGBvaluesPane newRGBPane;
 
-	private JButton loadFile = new JButton("Load image");
-	//private JButton colorLevels = new JButton("Color levels");
-	private JButton colorLevels = new JButton("Color levels");
-	private JButton exportImages = new JButton("Export imgs");
+	private JButton brighten = new JButton("Brighten");
+	private JButton darken = new JButton("Darken");
 
 	private int tempRed;
 	private int tempGreen;
@@ -54,148 +60,76 @@ public class Pane extends JPanel {
 	private Color tempColor;
 	private int tempRGB;
 	private JPanel tempPane;
+	private LUTimage lut;
+
+	public ImagePanel imagePanel;
 
 	public Pane() {
+		menu = new JMenuBar();
+		lut = new LUTimage(this);
 
-		imgMain = new RGBimage();
-		imgR = new RGBimage();
-		imgG = new RGBimage();
-		imgB = new RGBimage();
+		// FILE//
+		JMenu fileMenu = new JMenu("File");
+		JMenuItem save = new JMenuItem("Export image");
+		JMenuItem loadImage = new JMenuItem("Load image");
+		fileMenu.add(loadImage);
+		fileMenu.add(save);
 
-		System.out.println("MAIN: w = " + imgMain.imgContainer.getWidth());
+		// HISTOGRAMS //
+		JMenu levels = new JMenu("Color levels");
+		JMenuItem histogramsFrame = new JMenuItem("Histograms");
+		JMenuItem equalize = new JMenuItem("Equalize");
+		JMenuItem stretch = new JMenuItem("Stretch");
+		levels.add(histogramsFrame);
+		levels.add(equalize);
+		levels.add(stretch);
+		
+		//BINARIZATION//
+		
+		JMenu binarization = new JMenu("Binarization");
+		JMenuItem threshold = new JMenuItem("Threshold");
+		JMenuItem otsu = new JMenuItem("Otsu");
+		JMenuItem niblack = new JMenuItem("Niblack");
+		binarization.add(threshold);
+		binarization.add(otsu);
+		binarization.add(niblack);
 
-		setLayout(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
+		// MENU//
+		menu.add(fileMenu);
+		menu.add(levels);
+		menu.add(binarization);
 
+		JPanel buttons = new JPanel();
 		currentRGBPane = new RGBvaluesPane();
+		imagePanel = new ImagePanel(); // MAIN IMAGE
+
 		newRGBPane = new RGBvaluesPane();
+		buttons.setLayout(new BoxLayout(buttons, BoxLayout.LINE_AXIS));
+	  
+		buttons.add(brighten);
+		buttons.add(darken);
 
-		gbc.weightx = 1.0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		add(imgR.imgContainer, gbc);
+		currentRGBPane.setLayout(new BoxLayout(currentRGBPane, BoxLayout.LINE_AXIS));
+		newRGBPane.setLayout(new BoxLayout(newRGBPane, BoxLayout.LINE_AXIS));
 
-		gbc.weightx = 1.0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 1;
-		gbc.gridy = 0;
-		add(imgG.imgContainer, gbc);
+		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		// add(menu);
+		add(buttons);
+		add(newRGBPane);
+		add(imagePanel);
+		add(currentRGBPane);
 
-		gbc.weightx = 1.0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 2;
-		gbc.gridy = 0;
-		add(imgB.imgContainer, gbc);
-
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		// gbc.ipady = 20;
-		gbc.weightx = 0.0;
-		// gbc.gridwidth = 3;
-		gbc.gridx = 1;
-		gbc.gridy = 1;
-		add(newRGBPane.RGBvaluesContainer, gbc);
-
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		// gbc.ipady = 60;
-		gbc.weightx = 0.0;
-		// gbc.gridwidth = 3;
-		gbc.gridx = 1;
-		gbc.gridy = 2;
-		add(imgMain.imgContainer, gbc);
-
-		// gbc.fill = GridBagConstraints.HORIZONTAL;
-		// gbc.ipady = 20;
-		gbc.weightx = 1.0;
-		// gbc.gridwidth = 3;
-		gbc.gridx = 1;
-		gbc.gridy = 3;
-		add(currentRGBPane.RGBvaluesContainer, gbc);
-
-		// gbc.fill = GridBagConstraints.EAST;
-
-		gbc.weightx = 1.0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.gridy = 4;
-		add(loadFile, gbc);
-
-		gbc.weightx = 1.0;
-
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 1;
-		gbc.gridy = 4;
-		add(colorLevels, gbc);
-		
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 2;
-		gbc.gridy = 4;
-		add(exportImages, gbc);
-
-		imgMain.imgContainer.setMinimumSize(new Dimension(600, 400));
-		imgMain.imgContainer.setPreferredSize(new Dimension(600, 400));
-		imgMain.imgContainer.setMaximumSize(new Dimension(600, 400));
-
-		imgR.imgContainer.setMinimumSize(new Dimension(300, 200));
-		imgR.imgContainer.setPreferredSize(new Dimension(300, 200));
-		imgR.imgContainer.setMaximumSize(new Dimension(300, 200));
-
-		imgG.imgContainer.setMinimumSize(new Dimension(300, 200));
-		imgG.imgContainer.setPreferredSize(new Dimension(300, 200));
-		imgG.imgContainer.setMaximumSize(new Dimension(300, 200));
-
-		imgB.imgContainer.setMinimumSize(new Dimension(300, 200));
-		imgB.imgContainer.setPreferredSize(new Dimension(300, 200));
-		imgB.imgContainer.setMaximumSize(new Dimension(300, 200));
-		
-		 exportImages.addActionListener(new ActionListener() {
-		        @Override
-		        public void actionPerformed(ActionEvent e) {
-		         
-		        	  JFrame frame = new JFrame ("Save image");		
-		        	  frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			            frame.getContentPane().add (new SaveImage(imgMain)); 
-			           
-			            frame.pack();
-			            frame.setVisible (true);
-
-		        }
-		    });
-		 
-		 colorLevels.addActionListener(new ActionListener() {
-		        @Override
-		        public void actionPerformed(ActionEvent e) {
-		         
-		        	  JFrame frame = new JFrame ("Color levels");	
-		        	  frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			            try {
-							frame.getContentPane().add (new HistogramOperations(imgMain));
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} 
-			           // frame.setSize(900, 600);
-			            frame.pack();
-			            frame.setVisible (true);
-
-		        }
-		    });
-		 
-		loadFile.addActionListener(new ActionListener() {
-
+		// load image...
+		loadImage.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					
-					imgMain.setNewMainImage();
-					imgR.copyCreatedNewMainImage(imgMain.selectedFile);
-					imgG.copyCreatedNewMainImage(imgMain.selectedFile);
-					imgB.copyCreatedNewMainImage(imgMain.selectedFile);
+					imagePanel.imageLoad(); // LOAD RESIZED IMAGE
 
-					imgMain.imgContainer.addMouseMotionListener(new MouseAdapter() {
+					imagePanel.addMouseMotionListener(new MouseAdapter() {
 						@Override
 						public void mouseMoved(MouseEvent e) {
-							int packedInt = imgMain.img.getRGB(e.getX(), e.getY());
+							int packedInt = imagePanel.img.getRGB(e.getX(), e.getY());
 							Color color = new Color(packedInt, true);
 							currentRGBPane.RGBvaluesContainer.setBackground(color); // FIELDS
 							currentRGBPane.Rvalue.setText(Integer.toString(color.getRed()));
@@ -237,7 +171,7 @@ public class Pane extends JPanel {
 									+ MouseInfo.getPointerInfo().getLocation().y);
 							System.out.println(e);
 							// int abs = e.get
-							int packedInt = imgMain.img.getRGB(evt.getX(), evt.getY());
+							int packedInt = imagePanel.img.getRGB(evt.getX(), evt.getY());
 							Color color = new Color(packedInt, true);
 							currentRGBPane.setBackground(color);
 
@@ -250,7 +184,7 @@ public class Pane extends JPanel {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 
-							int packedInt = imgMain.img.getRGB(e.getX(), e.getY());
+							int packedInt = imagePanel.img.getRGB(e.getX(), e.getY());
 							Color color = new Color(packedInt, true);
 
 							int r = color.getRed();
@@ -259,21 +193,123 @@ public class Pane extends JPanel {
 
 							System.out.println("Clicked!");
 							System.out.println(tempRed + " " + tempGreen + " " + tempBlue);
+							System.out.println(r + " " + g + " " + b);
 							int rgb = ((tempRed & 0x0ff) << 16) | ((tempGreen & 0x0ff) << 8) | (tempBlue & 0x0ff);
-							imgMain.img.setRGB(e.getX(), e.getY(), rgb);
+							imagePanel.img.setRGB(e.getX(), e.getY(), rgb);
+							imagePanel.img.flush();
+							imagePanel.repaint();
+							///////////
+							int packedInt2 = imagePanel.img.getRGB(e.getX(), e.getY());
+							Color color2 = new Color(packedInt, true);
 
-							imgR.updateRvalue(tempRed);
-							imgG.updateGvalue(tempGreen);
-							imgB.updateBvalue(tempBlue);
-							repaint();
+							int r2 = color.getRed();
+							int g2 = color.getGreen();
+							int b2 = color.getBlue();
+
+							System.out.println("after:   " + r2 + " " + g2 + " " + b2);
+
 						}
 					};
 
-					imgMain.imgContainer.addMouseListener(mouse);
+					imagePanel.addMouseListener(mouse);
 
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
+				// pack();
+			}
+
+		});
+		/*
+		 * exportImages.addActionListener(new ActionListener() { // change //
+		 * exportImage
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * 
+		 * JFrame frame = new JFrame("Save image");
+		 * frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); //
+		 * frame.getContentPane().add (new SaveImage(imgMain)); frame.pack();
+		 * frame.setVisible(true); } });
+		 */
+
+		histogramsFrame.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				JFrame frame = new JFrame("Color levels");
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+				frame.getContentPane().add(new Histograms(imagePanel.img));
+				frame.setSize(800, 600);
+
+				frame.pack();
+				frame.setVisible(true);
+
+			}
+		});
+		
+		  stretch.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {       
+	                    new StretchHistogram(lut, imagePanel);	               
+	            }
+	        });
+	       
+	       equalize.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	            	
+	                    lut.histogramEqualization();
+	                    lut.repaintImage(imagePanel);
+	                    imagePanel.repaint();
+	              
+	            }
+	        });
+	   //BINARIZATION METHODS//
+	       
+	       niblack.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {       
+	                    new NiblackFrame(lut, imagePanel);	               
+	            }
+	        });
+	       
+	       threshold.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {       
+	                    new ThresholdFrame(lut, imagePanel);	               
+	            }
+	        });
+	       
+	       otsu.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	                
+	                    lut.otsu();
+	                    imagePanel.repaint();
+	               
+	            }
+	        });
+		
+		brighten.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				lut.expLUT(0.7);
+				lut.repaintImage(imagePanel);
+				imagePanel.repaint();
+
+			}
+		});
+		
+		darken.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				lut.expLUT(1 / 0.7);
+				
+				lut.repaintImage(imagePanel);
+				imagePanel.repaint();
 			}
 		});
 

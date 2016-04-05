@@ -3,6 +3,7 @@ package convertRGB;
 import java.awt.BorderLayout;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -44,9 +45,11 @@ public class PixelRGBconverter {
 
 				JFrame frame = new JFrame("RGB converter");
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.setLayout(new BorderLayout());
+				frame.setSize(new Dimension(800,600));
+				frame.getContentPane().setPreferredSize(new Dimension(800,600));
 				Pane pane = new Pane();		
 				frame.add(pane);
+				frame.setJMenuBar(pane.menu);
 				frame.pack();
 				frame.setLocationRelativeTo(null);
 				frame.setVisible(true);
