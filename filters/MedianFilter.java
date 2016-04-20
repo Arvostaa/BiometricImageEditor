@@ -4,50 +4,48 @@ import java.awt.image.*;
 
 public class MedianFilter{
     
-    private int size; //size of the square filter
+    private int squareSize; //size of the square filter
     
-    public MedianFilter(int s) {
-        if ((s%2 == 0)||(s < 3))
-        {   //check if the filter size is an odd number > = 3
-            System.out.println(s+"is not a valid filter size.");
-            System.out.println("Filter size is now set to 3");
-            s = 3;
+    public MedianFilter(int squaresize) {
+        if ((squaresize%2 == 0)||(squaresize < 3))
+        {            
+            squaresize = 3;
         }
-        size = s;
+        squareSize = squaresize;
     }
     
     public int getFilterSize() {
-        return size;
+        return squareSize;
     }
     
-    //sort the array, and return the median
-    public int median(int[] a) { // a = np. 3x3
+    //sort the array, return the median
+    public int median(int[] pixelsSquare) { // a = np. 3x3
         int temp;
-        int asize = a.length;
+        int pixelsCount = pixelsSquare.length;
         //sort the array in increasing order
-        for (int i = 0; i < asize ; i++)
-            for (int j = i+1; j < asize; j++)
-                if (a[i] > a[j]) {
-                    temp = a[i];
-                    a[i] = a[j];
-                    a[j] = temp;
+        for (int i = 0; i < pixelsCount ; i++)
+            for (int j = i+1; j < pixelsCount; j++)
+                if (pixelsSquare[i] > pixelsSquare[j]) {
+                    temp = pixelsSquare[i];
+                    pixelsSquare[i] = pixelsSquare[j];
+                    pixelsSquare[j] = temp;
                 }
-        //if it's odd
-        if (asize%2 == 1)
-            return a[asize/2];
+        
+        if (pixelsCount%2 == 1)
+            return pixelsSquare[pixelsCount/2];
         else
-            return ((a[asize/2]+a[asize/2 - 1])/2); //zwróæ œrodkowy
+            return ((pixelsSquare[pixelsCount/2]+pixelsSquare[pixelsCount/2 - 1])/2); //get pixel in the middle
     }
     
-    public int[] getArray(BufferedImage image, int x, int y){
-        int[] n; //store the pixel values of position(x, y) and its neighbors
+    public int[] getSquareOfPixels(BufferedImage image, int x, int y){
+        int[] pixelsSquare; //store the pixel values of position(x, y) and its neighbors
         int h = image.getHeight();
         int w = image.getWidth();
         int xmin, xmax, ymin, ymax; //the limits of the part of the image on which the filter operate on
-        xmin = x - size/2;
-        xmax = x + size/2;
-        ymin = y - size/2;
-        ymax = y + size/2;
+        xmin = x - squareSize/2;
+        xmax = x + squareSize/2;
+        ymin = y - squareSize/2;
+        ymax = y + squareSize/2;
         
         //special edge cases
         if (xmin < 0)
@@ -59,48 +57,46 @@ public class MedianFilter{
         if (ymax > (h - 1))
             ymax = h - 1;
         //the actual number of pixels to be considered
-        int nsize = (xmax-xmin+1)*(ymax-ymin+1);
-        n = new int[nsize];
+        int pixelsAmount = (xmax-xmin+1)*(ymax-ymin+1);
+        pixelsSquare = new int[pixelsAmount];
         int k = 0;
         for (int i = xmin; i <= xmax; i++)
             for (int j = ymin; j <= ymax; j++){
-                n[k] = image.getRGB(i, j); //get pixel value
+                pixelsSquare[k] = image.getRGB(i, j); //get pixel value
                 k++;
             }
-        return n;
+        return pixelsSquare;
     }
     
-    public BufferedImage filter(BufferedImage srcImage) {
-        int height = srcImage.getHeight();
-        int width = srcImage.getWidth();
+    public BufferedImage medianFilter(BufferedImage image) {
+        int height = image.getHeight();
+        int width = image.getWidth();
         Color c;
         BufferedImage tempImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-        
-        int[] a; //the array that gets the pixel value at (x, y) and its neightbors
+      
+        int[] squareOfPixels; //the array that gets the pixel value at (x, y) and its neightbors
         
         for (int k = 0; k < height; k++){
             for (int j = 0; j < width; j++) {
-                a = getArray(srcImage, j, k); // mam kwadracik
+                squareOfPixels = getSquareOfPixels(image, j, k); // mam kwadracik
                 int[] red, green, blue;
-                red = new int[a.length];
-                green = new int[a.length];
-                blue = new int[a.length];
-                //get the red,green,blue value from the pixel
-                for (int i = 0; i < a.length; i++) {
-                	//red[i] = Pixel.getRed( a[i] );
-                	c = new Color(a[i]);
+                red = new int[squareOfPixels.length];
+                green = new int[squareOfPixels.length];
+                blue = new int[squareOfPixels.length];
+              
+                for (int i = 0; i < squareOfPixels.length; i++) {
+       
+                	c = new Color(squareOfPixels[i]);
                     red[i] =c.getRed();
                     green[i] = c.getGreen();
                     blue[i] = c.getBlue();
                 }
-                //find the median for each color
+
                 int R = median(red);
                 int G = median(green);
                 int B = median(blue);
                 c = new Color(R,G,B);
-                //set the new pixel value using the median just found
-               // int spixel = Pixel.createRGB(R, G, B);
+          
                 int spixel = c.getRGB();
                tempImage.setRGB(j, k, spixel);
             }

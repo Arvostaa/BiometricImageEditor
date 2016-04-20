@@ -3,14 +3,14 @@ package filters;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
-public class Kuwara {
+public class Kuwahara {
 
 	private int windowSize = 5;
 
-	public Kuwara() {
+	public Kuwahara() {
 	}
 
-	public BufferedImage applyInPlace(BufferedImage image) {
+	public BufferedImage kuwaharaFilter(BufferedImage image) {
 
 		int width = image.getWidth();
 		int height = image.getHeight();

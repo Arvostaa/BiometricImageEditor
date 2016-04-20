@@ -303,8 +303,8 @@ public class Pane extends JPanel {
 
 			public void actionPerformed(ActionEvent e) {
 
-				Kuwara k = new Kuwara();
-				imagePanel.img = k.applyInPlace(imagePanel.img);
+				Kuwahara k = new Kuwahara();
+				imagePanel.img = k.kuwaharaFilter(imagePanel.img);
 				imagePanel.repaint();
 
 			}
@@ -315,7 +315,7 @@ public class Pane extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 
 				MedianFilter m = new MedianFilter(3);
-				imagePanel.img = m.filter(imagePanel.img);
+				imagePanel.img = m.medianFilter(imagePanel.img);
 				imagePanel.repaint();
 
 			}
