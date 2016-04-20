@@ -2,14 +2,7 @@
 package convertRGB;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.LayoutManager;
 import java.awt.MouseInfo;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -17,31 +10,23 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
 
 import Histograms.Histograms;
 import Histograms.LUTimage;
 import Histograms.StretchHistogram;
 import binarization.NiblackFrame;
 import binarization.ThresholdFrame;
+
+import filters.*;
 
 public class Pane extends JPanel {
 
@@ -83,9 +68,9 @@ public class Pane extends JPanel {
 		levels.add(histogramsFrame);
 		levels.add(equalize);
 		levels.add(stretch);
-		
-		//BINARIZATION//
-		
+
+		// BINARIZATION//
+
 		JMenu binarization = new JMenu("Binarization");
 		JMenuItem threshold = new JMenuItem("Threshold");
 		JMenuItem otsu = new JMenuItem("Otsu");
@@ -94,10 +79,22 @@ public class Pane extends JPanel {
 		binarization.add(otsu);
 		binarization.add(niblack);
 
-		// MENU//
+		// FILTERS//
+
+		JMenu filters = new JMenu("Filters");
+		JMenuItem sobel = new JMenuItem("Sobel");
+		JMenuItem kuwahra = new JMenuItem("Kuwahara");
+		JMenuItem median = new JMenuItem("Median");
+
+		filters.add(sobel);
+		filters.add(kuwahra);
+		filters.add(median);
+
+		// ***MENU***//
 		menu.add(fileMenu);
 		menu.add(levels);
 		menu.add(binarization);
+		menu.add(filters);
 
 		JPanel buttons = new JPanel();
 		currentRGBPane = new RGBvaluesPane();
@@ -105,7 +102,7 @@ public class Pane extends JPanel {
 
 		newRGBPane = new RGBvaluesPane();
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.LINE_AXIS));
-	  
+
 		buttons.add(brighten);
 		buttons.add(darken);
 
@@ -125,6 +122,7 @@ public class Pane extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					imagePanel.imageLoad(); // LOAD RESIZED IMAGE
+					imagePanel.resizeImagePanel();
 
 					imagePanel.addMouseMotionListener(new MouseAdapter() {
 						@Override
@@ -247,50 +245,82 @@ public class Pane extends JPanel {
 
 			}
 		});
-		
-		  stretch.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {       
-	                    new StretchHistogram(lut, imagePanel);	               
-	            }
-	        });
-	       
-	       equalize.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	            	
-	                    lut.histogramEqualization();
-	                    lut.repaintImage(imagePanel);
-	                    imagePanel.repaint();
-	              
-	            }
-	        });
-	   //BINARIZATION METHODS//
-	       
-	       niblack.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {       
-	                    new NiblackFrame(lut, imagePanel);	               
-	            }
-	        });
-	       
-	       threshold.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {       
-	                    new ThresholdFrame(lut, imagePanel);	               
-	            }
-	        });
-	       
-	       otsu.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                
-	                    lut.otsu();
-	                    imagePanel.repaint();
-	               
-	            }
-	        });
-		
+
+		stretch.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new StretchHistogram(lut, imagePanel);
+			}
+		});
+
+		equalize.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				lut.histogramEqualization();
+				lut.repaintImage(imagePanel);
+				imagePanel.repaint();
+
+			}
+		});
+		// BINARIZATION METHODS//
+
+		niblack.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new NiblackFrame(lut, imagePanel);
+			}
+		});
+
+		threshold.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ThresholdFrame(lut, imagePanel);
+			}
+		});
+
+		otsu.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				lut.otsu();
+				imagePanel.repaint();
+
+			}
+		});
+
+		// FILTER METHODS//
+
+		sobel.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				lut.grayScale(imagePanel);
+				lut.sobel2();
+			}
+		});
+
+		kuwahra.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+
+				Kuwara k = new Kuwara();
+				imagePanel.img = k.applyInPlace(imagePanel.img);
+				imagePanel.repaint();
+
+			}
+		});
+
+		median.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+
+				MedianFilter m = new MedianFilter(3);
+				imagePanel.img = m.filter(imagePanel.img);
+				imagePanel.repaint();
+
+			}
+		});
+
 		brighten.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -301,13 +331,13 @@ public class Pane extends JPanel {
 
 			}
 		});
-		
+
 		darken.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
 				lut.expLUT(1 / 0.7);
-				
+
 				lut.repaintImage(imagePanel);
 				imagePanel.repaint();
 			}

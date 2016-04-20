@@ -23,69 +23,77 @@ import javax.swing.JPanel;
 
 public class ImagePanel extends JPanel {
 	Image displayImage, startImage;
-	
+
 	String path;
 	Graphics2D big;
 	LookupTable lookupTable;
-	
-	public BufferedImage img; //bi
+
+	public BufferedImage img; // bi
 	public String sname;
-//	public JLabel imgContainer;
+	// public JLabel imgContainer;
 	public File selectedFile;
 	public String selectedPath;
 	public Dimension d;
+	public int imageH;
+	public int imageW;
 
-	ImagePanel(){	
-		this.setSize(550,550);	
-	    createBufferedImage();
-	
+	ImagePanel() {
+		this.setSize(550, 550);
+		createBufferedImage();
+		//this.setSize(imageW, imageH);
+
 	}
 	
-	
+	public void resizeImagePanel(){
+		this.setSize(imageW, imageH);
+	}
+
 	public void imageLoad() throws IOException {
 
-		JFileChooser fc = new JFileChooser("C:\\Users\\Anna\\Documents\\sem666\\biometria\\BiometriaObrazki\\histogramy");
+		JFileChooser fc = new JFileChooser(
+				"C:\\Users\\Anna\\Documents\\sem6\\biometria\\BiometriaObrazki\\histogramy");
 		int result = fc.showOpenDialog(null);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fc.getSelectedFile();
 			String sname = selectedFile.getAbsolutePath();
-			img = ImageIO.read(selectedFile); 
-					
+			img = ImageIO.read(selectedFile);
+			imageH = img.getHeight();
+			imageW = img.getWidth();
 			int w = img.getWidth();
 			int h = img.getHeight();
-			
-			double scale = 550/(double)h;
-			
+
+			double scale = imageH / (double) h;
+
 			BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 			AffineTransform at = new AffineTransform();
 			at.scale(scale, scale);
 			AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 			after = scaleOp.filter(img, after);
-			
+
 			loadImage(after);
 		}
 	}
-	
+
 	public void createBufferedImage() {
-		img = new BufferedImage(550,550, BufferedImage.TYPE_INT_ARGB);
-		
+		img = new BufferedImage(550, 550, BufferedImage.TYPE_INT_ARGB);
+
 	}
 
 	public void loadImage(BufferedImage image) {
-	
+
 		int w = image.getWidth();
 		int h = image.getHeight();
-		
+
 		img = image;
-		
+		imageW = image.getWidth();
+		imageH = image.getHeight();
 		big = image.createGraphics();
 		big.drawImage(image, 0, 0, this);
-		
-	//	startImage = image;
-	//	displayImage = image;
+
+		// startImage = image;
+		// displayImage = image;
 		repaint();
 	}
-
 
 	public void update(Graphics g) {
 		g.clearRect(0, 0, getWidth(), getHeight());
