@@ -27,6 +27,7 @@ import binarization.NiblackFrame;
 import binarization.ThresholdFrame;
 
 import filters.*;
+import fingerprint.Thinning;
 
 public class Pane extends JPanel {
 
@@ -85,6 +86,7 @@ public class Pane extends JPanel {
 		JMenuItem sobel = new JMenuItem("Sobel");
 		JMenuItem kuwahra = new JMenuItem("Kuwahara");
 		JMenuItem median = new JMenuItem("Median");
+		JMenuItem thinning = new JMenuItem("Thinning");
 
 		filters.add(sobel);
 		filters.add(kuwahra);
@@ -95,6 +97,7 @@ public class Pane extends JPanel {
 		menu.add(levels);
 		menu.add(binarization);
 		menu.add(filters);
+		menu.add(thinning);
 
 		JPanel buttons = new JPanel();
 		currentRGBPane = new RGBvaluesPane();
@@ -318,6 +321,24 @@ public class Pane extends JPanel {
 				imagePanel.img = m.medianFilter(imagePanel.img);
 				imagePanel.repaint();
 
+			}
+		});
+		
+		thinning.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+
+				Thinning t = new Thinning(imagePanel.img);
+				try {
+					t.thin();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				imagePanel.img = t.image;
+				imagePanel.repaint();
+				
+			
 			}
 		});
 

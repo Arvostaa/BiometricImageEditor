@@ -102,7 +102,7 @@ public class RGBimage {
 		double scale = d.getHeight()/(double)img.getHeight();
 			int w = img.getWidth();
 			int h = img.getHeight();
-			BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+			BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 			AffineTransform at = new AffineTransform();
 			at.scale(scale, scale);
 			AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
