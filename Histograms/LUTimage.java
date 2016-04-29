@@ -502,7 +502,8 @@ public class LUTimage {
 
 		// double[][] sobel_y = { { 1, 1, 1 }, { 1, 1, 1 }, { 1, 1, 1 } };
 
-		double[][] sobel_y = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
+		//double[][] sobel_y = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
+		double[][] sobel_y = { { 1, 1, 1 }, { 1,1, 1 }, { 1, 1, 1 } };
 
 		/*
 		 * int [][] sobel_y = {{-1,-2,-1}, {0,0,0}, {1,2,1}};
@@ -568,7 +569,7 @@ public class LUTimage {
 					+sobel_y[2][0] * red[i + 1][j - 1] + sobel_y[2][1] * red[i + 1][j]
 							+ sobel_y[2][2] * red[i + 1][j + 1];
 
-					Gr[i][j] = yR[i][j] + 128;
+					Gr[i][j] = yR[i][j];
 
 					// G
 
@@ -578,7 +579,7 @@ public class LUTimage {
 
 					+sobel_y[2][0] * green[i + 1][j - 1] + sobel_y[2][1] * green[i + 1][j]
 							+ sobel_y[2][2] * green[i + 1][j + 1];
-					Gg[i][j] = yG[i][j] + 128;
+					Gg[i][j] = yG[i][j];
 
 					// B
 
@@ -588,7 +589,7 @@ public class LUTimage {
 
 					+sobel_y[2][0] * blue[i + 1][j - 1] + sobel_y[2][1] * blue[i + 1][j]
 							+ sobel_y[2][2] * blue[i + 1][j + 1];
-					Gb[i][j] = yB[i][j] + 128;
+					Gb[i][j] = yB[i][j];
 
 					if ((int) Gg[i][j] > 255) {
 						Gg[i][j] = 255;
@@ -633,84 +634,6 @@ public class LUTimage {
 		mainPanel.imagePanel.img = outImg;
 		mainPanel.imagePanel.repaint();
 
-	}
-
-	public void sobel8() { // DZIALA
-
-		BufferedImage inputImg = mainPanel.imagePanel.img;
-		BufferedImage outputImg = new BufferedImage(inputImg.getWidth(), inputImg.getHeight(),
-				BufferedImage.TYPE_INT_RGB);
-		Color c;
-		int[][] pixelMatrix = new int[3][3];
-
-		for (int i = 1; i < inputImg.getWidth() - 1; i++) {
-			for (int j = 1; j < inputImg.getHeight() - 1; j++) {
-
-				pixelMatrix[0][0] = new Color(inputImg.getRGB(i - 1, j - 1)).getRed();
-				pixelMatrix[0][1] = new Color(inputImg.getRGB(i, j - 1)).getRed();
-				pixelMatrix[0][2] = new Color(inputImg.getRGB(i + 1, j - 1)).getRed();
-				pixelMatrix[1][0] = new Color(inputImg.getRGB(i - 1, j)).getRed();
-				pixelMatrix[1][1] = new Color(inputImg.getRGB(i, j)).getRed();
-				pixelMatrix[1][2] = new Color(inputImg.getRGB(i + 1, j)).getRed();
-				pixelMatrix[2][0] = new Color(inputImg.getRGB(i - 1, j + 1)).getRed();
-				pixelMatrix[2][1] = new Color(inputImg.getRGB(i, j + 1)).getRed();
-				pixelMatrix[2][2] = new Color(inputImg.getRGB(i + 1, j + 1)).getRed();
-
-				int edge = (int) convolution(pixelMatrix);
-
-				outputImg.setRGB(i, j, (edge << 24 | edge << 16 | edge << 8 | edge));
-
-				// outputImg.setRGB(i, j, c2.getRGB());
-			}
-		}
-
-		mainPanel.imagePanel.img = outputImg;
-		mainPanel.imagePanel.repaint();
-	}
-
-	public static double convolution(int[][] pixelMatrix) {
-
-		double gy = (pixelMatrix[0][0] * -1) + (pixelMatrix[0][1] * -2) + (pixelMatrix[0][2] * -1) + (pixelMatrix[2][0])
-				+ (pixelMatrix[2][1] * 2) + (pixelMatrix[2][2] * 1);
-		double gx = (pixelMatrix[0][0] * -1) + (pixelMatrix[0][2]) + (pixelMatrix[1][0] * -2) + (pixelMatrix[1][2] * 2)
-				+ (pixelMatrix[2][0] * -1) + (pixelMatrix[2][2] * 1);
-		// return Math.sqrt(Math.pow(gy, 2) + Math.pow(gx, 2));
-		return Math.hypot(gx, gy);
-		// return gy;
-
-	}
-
-	public void laplace() {
-
-		BufferedImage pic1 = mainPanel.imagePanel.img;
-		int width = pic1.getWidth();
-		int height = pic1.getHeight();
-		for (int y = 1; y < height - 1; y++) {
-			for (int x = 1; x < width - 1; x++) {
-				Color c00 = new Color(pic1.getRGB(x - 1, y - 1));
-				Color c01 = new Color(pic1.getRGB(x - 1, y));
-				Color c02 = new Color(pic1.getRGB(x - 1, y + 1));
-				Color c10 = new Color(pic1.getRGB(x, y - 1));
-				Color c11 = new Color(pic1.getRGB(x, y));
-				Color c12 = new Color(pic1.getRGB(x, y + 1));
-				Color c20 = new Color(pic1.getRGB(x + 1, y - 1));
-				Color c21 = new Color(pic1.getRGB(x + 1, y));
-				Color c22 = new Color(pic1.getRGB(x + 1, y + 1));
-				int r = -c00.getRed() - c01.getRed() - c02.getRed() + -c10.getRed() + 8 * c11.getRed() - c12.getRed()
-						+ -c20.getRed() - c21.getRed() - c22.getRed();
-				int g = -c00.getGreen() - c01.getGreen() - c02.getGreen() + -c10.getGreen() + 8 * c11.getGreen()
-						- c12.getGreen() + -c20.getGreen() - c21.getGreen() - c22.getGreen();
-				int b = -c00.getBlue() - c01.getBlue() - c02.getBlue() + -c10.getBlue() + 8 * c11.getBlue()
-						- c12.getBlue() + -c20.getBlue() - c21.getBlue() - c22.getBlue();
-				r = Math.min(255, Math.max(0, r));
-				g = Math.min(255, Math.max(0, g));
-				b = Math.min(255, Math.max(0, b));
-				Color c = new Color(r, g, b);
-				pic1.setRGB(x, y, c.getRGB());
-			}
-		}
-		mainPanel.imagePanel.img = pic1;
-		mainPanel.imagePanel.repaint();
 	}
 
 	public Color grayScalePix(Color c) {
